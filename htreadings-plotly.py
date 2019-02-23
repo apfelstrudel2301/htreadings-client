@@ -60,6 +60,25 @@ print(unique_url)
 s1 = py.Stream(stream_ids[0])
 s2 = py.Stream(stream_ids[1])
 
+def push_history():
+    s1.open()
+    s2.open()
+    conn = sqlite3.connect('../sensordata-stream.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * from htreadings')
+    row = cursor.fetchone()
+    while true:
+        if row == None:
+            break
+        _, timestamp, temperature, humidity = row
+        s1.write(dict(x=timestamp, y=temperature))
+        s2.write(dict(x=timestamp, y=humidity))
+    s1.close()
+    s2.close()
+    return
+    
+
+
 def tick():
     i=0
     s1.open()
@@ -83,7 +102,7 @@ def tick():
         print('Sent values ' + str(i))
         time.sleep(30)
 
-
+push_history()
 tick()
 s1.close()
 s2.close()
