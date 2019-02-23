@@ -67,7 +67,7 @@ def push_history():
     cursor = conn.cursor()
     cursor.execute('SELECT * from htreadings')
     row = cursor.fetchone()
-    while true:
+    while True:
         if row == None:
             break
         _, timestamp, temperature, humidity = row
@@ -76,7 +76,6 @@ def push_history():
     s1.close()
     s2.close()
     return
-    
 
 
 def tick():
@@ -107,3 +106,4 @@ tick()
 s1.close()
 s2.close()
 print('closed')
+
