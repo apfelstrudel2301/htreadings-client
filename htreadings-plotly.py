@@ -70,7 +70,7 @@ def tick():
         timestamp = datetime.datetime.now()
         print('Temperature: {0:0.1f}*C, Humidity: {1:0.1f}%'.format(temperature, humidity))
 
-        conn = sqlite3.connect('sensordata-stream.db')
+        conn = sqlite3.connect('../sensordata-stream.db')
         cursor = conn.cursor()
         cursor.execute('INSERT INTO htreadings (timestamp, temperature, humidity) VALUES (?, ?, ?)', (timestamp, temperature, humidity))
         conn.commit()
@@ -81,7 +81,7 @@ def tick():
         s2.write(dict(x=timestamp, y=humidity))
         i += 1
         print('Sent values ' + str(i))
-        time.sleep(120)
+        time.sleep(30)
 
 
 tick()
