@@ -86,6 +86,7 @@ def tick():
         humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
         # humidity, temperature = (i, i+1)
         timestamp = datetime.datetime.now()
+	print(timestamp)
         print('Temperature: {0:0.1f}*C, Humidity: {1:0.1f}%'.format(temperature, humidity))
 
         conn = sqlite3.connect('../sensordata-stream.db')
