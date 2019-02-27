@@ -65,7 +65,7 @@ def push_history():
     s2.open()
     conn = sqlite3.connect('../sensordata-stream.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT * from htreadings')
+    cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 510) ORDER BY timestamp asc')
     while True:
 	row = cursor.fetchone()
         if row == None:
