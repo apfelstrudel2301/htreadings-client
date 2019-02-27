@@ -66,13 +66,15 @@ def push_history():
     conn = sqlite3.connect('../sensordata-stream.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * from htreadings')
-    row = cursor.fetchone()
     while True:
+	row = cursor.fetchone()
         if row == None:
             break
         _, timestamp, temperature, humidity = row
         s1.write(dict(x=timestamp, y=temperature))
         s2.write(dict(x=timestamp, y=humidity))
+	time.sleep(0.1)
+    conn.close()
     s1.close()
     s2.close()
     return
@@ -80,8 +82,6 @@ def push_history():
 
 def tick():
     i=0
-    s1.open()
-    s2.open()
     while True:
         humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
         # humidity, temperature = (i, i+1)
@@ -95,11 +95,15 @@ def tick():
         conn.close()
         print('Made entry')
 
+	s1.open()
+	s2.open()
         s1.write(dict(x=timestamp, y=temperature))
         s2.write(dict(x=timestamp, y=humidity))
         i += 1
         print('Sent values ' + str(i))
-        time.sleep(30)
+	s1.close()
+	s2.close()
+        time.sleep(300)
 
 push_history()
 tick()
