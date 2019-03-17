@@ -82,6 +82,7 @@ def push_history():
 
 def tick():
     i=0
+    delta = False
     while True:
         humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
         # humidity, temperature = (i, i+1)
@@ -95,16 +96,22 @@ def tick():
         conn.commit()
         conn.close()
         print('Made entry')
-
-	s1.open()
-	s2.open()
-        s1.write(dict(x=timestamp, y=temperature))
-        s2.write(dict(x=timestamp, y=humidity))
-        i += 1
-        print('Sent values ' + str(i))
-	s1.close()
-	s2.close()
-        time.sleep(300)
+	try:
+	    if delta:
+		push_history()
+	    	delta = False
+	    else:
+		s1.open()
+		s2.open()
+                s1.write(dict(x=timestamp, y=temperature))
+            	s2.write(dict(x=timestamp, y=humidity))
+            	i += 1
+            	print('Sent values ' + str(i))
+	    	s1.close()
+	    	s2.close()
+	except:
+	    delta = True
+        time.sleep(120)
 
 push_history()
 tick()
