@@ -98,6 +98,7 @@ def tick():
         print('Made entry')
 	try:
 	    if delta:
+		print('recover delta')
 		push_history()
 	    	delta = False
 	    else:
@@ -106,10 +107,11 @@ def tick():
                 s1.write(dict(x=timestamp, y=temperature))
             	s2.write(dict(x=timestamp, y=humidity))
             	i += 1
-            	print('Sent values ' + str(i))
+            	print('sent values ' + str(i))
 	    	s1.close()
 	    	s2.close()
 	except:
+	    print('connection error')
 	    delta = True
         time.sleep(120)
 
