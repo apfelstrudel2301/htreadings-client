@@ -16,6 +16,7 @@ stream_ids = tls.get_credentials_file()['stream_ids']
 
 sensor = Adafruit_DHT.DHT22
 gpio = 4
+interval = 300
 
 temp_trace = Scatter(
     x = [],
@@ -113,7 +114,7 @@ def tick():
 	except:
 	    print('connection error')
 	    delta = True
-        time.sleep(120)
+        time.sleep(interval)
 
 push_history()
 tick()
