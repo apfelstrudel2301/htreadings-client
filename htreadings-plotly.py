@@ -68,7 +68,7 @@ def push_history():
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 510) ORDER BY timestamp asc')
     while True:
-	row = cursor.fetchone()
+	    row = cursor.fetchone()
         if row == None:
             break
         _, timestamp, temperature, humidity = row
@@ -80,40 +80,50 @@ def push_history():
     s2.close()
     return
 
+def recordAndSave():
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
+    timestamp = datetime.datetime.now()
+    print(timestamp)
+    print('Temperature: {0:0.1f}*C, Humidity: {1:0.1f}%'.format(temperature, humidity))
+
+    conn = sqlite3.connect('../sensordata-stream.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO htreadings (timestamp, temperature, humidity) VALUES (?, ?, ?)', (timestamp, temperature, humidity))
+    conn.commit()
+    conn.close()
+    print('Made entry')
+    return timestamp, temperature, humidity
+
+def uploadEntry(timestamp, temperature, humidity, s1, s2):
+    s1.open()
+    s2.ipen()
+    s1.write(dict(x=timestamp, y=temperature))
+    s2.write(dict(x=timestamp, y=humidity))  
 
 def tick():
     i=0
     delta = False
     while True:
-        humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
-        # humidity, temperature = (i, i+1)
-        timestamp = datetime.datetime.now()
-	print(timestamp)
-        print('Temperature: {0:0.1f}*C, Humidity: {1:0.1f}%'.format(temperature, humidity))
-
-        conn = sqlite3.connect('../sensordata-stream.db')
-        cursor = conn.cursor()
-        cursor.execute('INSERT INTO htreadings (timestamp, temperature, humidity) VALUES (?, ?, ?)', (timestamp, temperature, humidity))
-        conn.commit()
-        conn.close()
-        print('Made entry')
-	try:
-	    if delta:
-		print('recover delta')
-		push_history()
-	    	delta = False
-	    else:
-		s1.open()
-		s2.open()
-                s1.write(dict(x=timestamp, y=temperature))
-            	s2.write(dict(x=timestamp, y=humidity))
-            	i += 1
-            	print('sent values ' + str(i))
-	    	s1.close()
-	    	s2.close()
-	except:
-	    print('connection error')
-	    delta = True
+        try:
+           timrestamp, temperature, humidity = recordAndSave()
+        except:
+            rec_error = True
+            print('Recording error')
+        try:
+            if not rec_error:
+                if delta:
+                    print('recover delta')
+                    push_history()
+                    delta = False
+                else:
+                    uploadEntry(timestamp, temperature, humidity)
+                    i += 1
+                    print('sent values ' + str(i))
+                    s1.close()
+                    s2.close()
+        except:
+            print('connection error')
+            delta = True
         time.sleep(interval)
 
 push_history()
