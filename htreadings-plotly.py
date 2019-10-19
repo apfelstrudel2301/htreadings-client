@@ -68,13 +68,13 @@ def push_history():
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 510) ORDER BY timestamp asc')
     while True:
-	    row = cursor.fetchone()
+        row = cursor.fetchone()
         if row == None:
             break
         _, timestamp, temperature, humidity = row
         s1.write(dict(x=timestamp, y=temperature))
         s2.write(dict(x=timestamp, y=humidity))
-	time.sleep(0.1)
+    time.sleep(0.1)
     conn.close()
     s1.close()
     s2.close()
