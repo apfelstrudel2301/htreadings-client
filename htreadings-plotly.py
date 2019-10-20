@@ -105,7 +105,8 @@ def tick():
     delta = False
     while True:
         try:
-           timrestamp, temperature, humidity = recordAndSave()
+           timestamp, temperature, humidity = recordAndSave()
+           rec_error = False
         except:
             rec_error = True
             print('Recording error')
