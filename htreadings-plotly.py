@@ -4,8 +4,8 @@ import math # because the Americans can't spell
 import sqlite3 as sql
 import time
 import datetime
-import plotly.plotly as py
-import plotly.tools as tls
+import chart_studio.plotly as py
+import chart_studio.tools as tls
 from plotly.graph_objs import *
 
 import Adafruit_DHT
