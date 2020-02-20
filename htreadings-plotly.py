@@ -23,7 +23,7 @@ temp_trace = Scatter(
     y = [],
     mode = 'lines+markers',
     name = 'Temp',
-    stream = Stream(
+    stream = scatter.Stream(
         token=stream_ids[0]
     )
 )
@@ -33,24 +33,24 @@ hum_trace = Scatter(
     y = [],
     mode = 'lines+markers',
     name = 'Hum',
-    stream = Stream(
+    stream = scatter.Stream(
         token=stream_ids[1]
     )
 )
 
-data = Data([temp_trace, hum_trace])
+data = [temp_trace, hum_trace]
 layout = Layout(
     title = 'Indoor Temperature & Humidity',
-    yaxis = YAxis(
+    yaxis = layout.YAxis(
         title = 'Temperature'
     ),
-    yaxis2 = YAxis(
+    yaxis2 = layout.YAxis(
         title = 'Humidity',
         overlaying = 'y',
         side = 'right'
     ),
     showlegend=True,
-    legend=Legend(
+    legend=layout.Legend(
         x=0,
         y=0
     )
