@@ -74,6 +74,7 @@ def push_history(db_path, api_url):
         if row is None:
             break
         _, timestamp, temperature, humidity = row
+        timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S.%f")
         upload_successful = upload_entry(timestamp, temperature, humidity, api_url=api_url)
         if not upload_successful:
             return False
@@ -84,11 +85,11 @@ def push_history(db_path, api_url):
 
 def upload_entry(timestamp, temperature, humidity, api_url):
     data = {
-        'timestamp': datetime.datetime.strftime(timestamp, "%Y-%m-%d %H:%M:%S.%f"),
+        'timestamp': timestamp,
         'temperature': temperature,
         'humidity': humidity
     }
-    payload = json.dumps(data)
+    payload = json.dumps(data, default=str)
     url = api_url
     headers = {
         'x-api-key': 'vS6Cq6hlVX2UWqnfKKTne6T5JkkTNsl4aSkdzPL4',
