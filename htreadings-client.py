@@ -12,7 +12,7 @@ def main():
         import Adafruit_DHT
         sensor = Adafruit_DHT.DHT22
         gpio = 4
-    interval = 30
+    interval = 300
     db_path = 'db/sensordata.db'
     api_url = 'https://t2sa88ddol.execute-api.eu-central-1.amazonaws.com/dev/htreadings'
     i = 0
@@ -27,6 +27,7 @@ def main():
                 timestamp, temperature, humidity = record_and_save(sensor=sensor, gpio=gpio, db_path=db_path)
             rec_error = False
         except Exception as e:
+            print(e)
             rec_error = True
             print('Recording error')
         if not rec_error:
@@ -48,6 +49,7 @@ def main():
 
 
 def record_and_save(sensor, gpio, db_path):
+    import Adafruit_DHT
     humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
     timestamp = datetime.datetime.now()
     print(timestamp)
