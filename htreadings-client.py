@@ -16,7 +16,7 @@ def main():
     db_path = 'db/sensordata.db'
     api_url = 'https://t2sa88ddol.execute-api.eu-central-1.amazonaws.com/dev/htreadings'
     i = 0
-    delta = False
+    delta = True
     while True:
         try:
             if mock_sensor_readings:
@@ -68,7 +68,7 @@ def record_and_save(sensor, gpio, db_path):
 def push_history(db_path, api_url):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 210) ORDER BY timestamp asc')
+    cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 10) ORDER BY timestamp asc')
     while True:
         row = cursor.fetchone()
         if row is None:
@@ -84,11 +84,11 @@ def push_history(db_path, api_url):
 
 def upload_entry(timestamp, temperature, humidity, api_url):
     data = {
-        'timestamp': datetime.datetime.strftime(timestamp, "%Y-%m-%d %H:%M:%S.%f"),
+        'timestamp': datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S.%f"),
         'temperature': temperature,
         'humidity': humidity
     }
-    payload = json.dumps(data)
+    payload = json.dumps(data, default=str)
     url = api_url
     headers = {
         'x-api-key': 'vS6Cq6hlVX2UWqnfKKTne6T5JkkTNsl4aSkdzPL4',
