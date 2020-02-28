@@ -94,7 +94,12 @@ def upload_entry(timestamp, temperature, humidity, api_url):
         'x-api-key': 'vS6Cq6hlVX2UWqnfKKTne6T5JkkTNsl4aSkdzPL4',
         'Content-Type': 'application/json'
     }
-    response = requests.request("POST", url, headers=headers, data=payload)
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload)
+    except requests.exceptions.ConnectionError as e:
+        print('Could not create connection to REST endpoint')
+        print(e)
+        return False
     time.sleep(0.1)
     if response.status_code != 200:
         print('upload error')
