@@ -7,7 +7,7 @@ import requests
 
 def main():
     #TODO: set to false
-    mock_sensor_readings = False
+    mock_sensor_readings = True
     if not mock_sensor_readings:
         import Adafruit_DHT
         sensor = Adafruit_DHT.DHT22
