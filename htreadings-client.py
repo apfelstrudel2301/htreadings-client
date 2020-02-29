@@ -73,7 +73,7 @@ def record_and_save(sensor, gpio, db_path):
 def push_history(db_path, api_url, headers):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 50) ORDER BY timestamp asc')
+    cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 201) ORDER BY timestamp asc')
     rows = cursor.fetchall()
     conn.close()
     entries_dict_list = [dict(zip(['id', 'timestamp', 'temperature', 'humidity'], values)) for values in rows]
