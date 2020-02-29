@@ -7,7 +7,7 @@ import requests
 
 def main():
     #TODO: set to false
-    mock_sensor_readings = True
+    mock_sensor_readings = False
     if not mock_sensor_readings:
         import Adafruit_DHT
         sensor = Adafruit_DHT.DHT22
@@ -76,8 +76,8 @@ def push_history(db_path, api_url, headers):
     cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 50) ORDER BY timestamp asc')
     rows = cursor.fetchall()
     conn.close()
-    entries_dict = [dict(zip(['id', 'timestamp', 'temperature', 'humidity'], values)) for values in rows]
-    payload = json.dumps(entries_dict)
+    entries_dict_list = [dict(zip(['id', 'timestamp', 'temperature', 'humidity'], values)) for values in rows]
+    payload = json.dumps(entries_dict_list)
     try:
         response = requests.request("POST", api_url, headers=headers, data=payload)
     except requests.exceptions.ConnectionError as e:
@@ -90,6 +90,7 @@ def push_history(db_path, api_url, headers):
         print(response.text.encode('utf8'))
         return False
     if response.status_code == 200:
+        print(len(entries_dict_list))
         print('Successfully pushed history')
         return True
 
