@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import json
 import sqlite3
 import time
@@ -14,7 +16,7 @@ def main():
         gpio = 4
     interval = 300
     db_path = 'db/sensordata.db'
-    api_url = 'https://t2sa88ddol.execute-api.eu-central-1.amazonaws.com/dev/htreadings'
+    api_url = 'https://t2sa88ddol.execute-api.eu-central-1.amazonaws.com/dev/htreadings-rds'
     i = 0
     delta = False
     while True:
