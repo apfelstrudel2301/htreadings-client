@@ -15,8 +15,13 @@ def main():
     interval = 300
     db_path = 'db/sensordata.db'
     api_url = 'https://t2sa88ddol.execute-api.eu-central-1.amazonaws.com/dev/htreadings'
+    api_url_bulk = 'https://t2sa88ddol.execute-api.eu-central-1.amazonaws.com/dev/htreadings-rds-bulk'
+    headers = {
+        'x-api-key': 'vS6Cq6hlVX2UWqnfKKTne6T5JkkTNsl4aSkdzPL4',
+        'Content-Type': 'application/json'
+    }
     i = 0
-    delta = False
+    delta = True
     while True:
         try:
             if mock_sensor_readings:
@@ -33,11 +38,11 @@ def main():
         if not rec_error:
             if delta:
                 print('recover delta')
-                push_successful = push_history(db_path=db_path, api_url=api_url)
+                push_successful = push_history(db_path=db_path, api_url=api_url_bulk, headers=headers)
                 if push_successful:
                     delta = False
             else:
-                upload_successful = upload_entry(timestamp, temperature, humidity, api_url=api_url)
+                upload_successful = upload_entry(timestamp, temperature, humidity, api_url=api_url, headers=headers)
                 if upload_successful:
                     i += 1
                     print('sent values ' + str(i))
@@ -65,24 +70,31 @@ def record_and_save(sensor, gpio, db_path):
     return timestamp, temperature, humidity
 
 
-def push_history(db_path, api_url):
+def push_history(db_path, api_url, headers):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 210) ORDER BY timestamp asc')
-    while True:
-        row = cursor.fetchone()
-        if row is None:
-            break
-        _, timestamp, temperature, humidity = row
-        upload_successful = upload_entry(timestamp, temperature, humidity, api_url=api_url)
-        if not upload_successful:
-            return False
+    cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 50) ORDER BY timestamp asc')
+    rows = cursor.fetchall()
     conn.close()
-    print('Successfully pushed history')
-    return True
+    entries_dict = [dict(zip(['id', 'timestamp', 'temperature', 'humidity'], values)) for values in rows]
+    payload = json.dumps(entries_dict)
+    try:
+        response = requests.request("POST", api_url, headers=headers, data=payload)
+    except requests.exceptions.ConnectionError as e:
+        print('Could not create connection to REST endpoint for bulk upload')
+        print(e)
+        return False
+    time.sleep(0.1)
+    if response.status_code != 200:
+        print('bulk upload error')
+        print(response.text.encode('utf8'))
+        return False
+    if response.status_code == 200:
+        print('Successfully pushed history')
+        return True
 
 
-def upload_entry(timestamp, temperature, humidity, api_url):
+def upload_entry(timestamp, temperature, humidity, api_url, headers):
     data = {
         'timestamp': datetime.datetime.strftime(timestamp, "%Y-%m-%d %H:%M:%S.%f"),
         'temperature': temperature,
@@ -90,10 +102,6 @@ def upload_entry(timestamp, temperature, humidity, api_url):
     }
     payload = json.dumps(data)
     url = api_url
-    headers = {
-        'x-api-key': 'vS6Cq6hlVX2UWqnfKKTne6T5JkkTNsl4aSkdzPL4',
-        'Content-Type': 'application/json'
-    }
     try:
         response = requests.request("POST", url, headers=headers, data=payload)
     except requests.exceptions.ConnectionError as e:
