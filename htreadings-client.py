@@ -16,7 +16,7 @@ def main():
     db_path = 'db/sensordata.db'
     base_url = 'https://eatpcfzrgg.execute-api.eu-central-1.amazonaws.com/int'
     api_key = '1iXFG6qHJZ6C2CD1Ihvhv9s1tA2UYaXaDVZs9114'
-    api_url = base_url + '/htreadings-single'
+    api_url_single = base_url + '/htreadings-single'
     api_url_bulk = base_url + '/htreadings-bulk'
     headers = {
         'x-api-key': api_key,
@@ -44,7 +44,7 @@ def main():
                 if push_successful:
                     delta = False
             else:
-                upload_successful = upload_entry(timestamp, temperature, humidity, api_url=api_url, headers=headers)
+                upload_successful = upload_entry(timestamp, temperature, humidity, api_url=api_url_single, headers=headers)
                 if upload_successful:
                     i += 1
                     print('sent values ' + str(i))
@@ -81,7 +81,7 @@ def push_history(db_path, api_url, headers):
     entries_dict_list = [dict(zip(['id', 'timestamp', 'temperature', 'humidity'], values)) for values in rows]
     payload = json.dumps(entries_dict_list)
     try:
-        response = requests.request("POST", api_url, headers=headers, data=payload)
+        response = requests.request("POST", api_url_bulk, headers=headers, data=payload)
     except requests.exceptions.ConnectionError as e:
         print('Could not create connection to REST endpoint for bulk upload')
         print(e)
