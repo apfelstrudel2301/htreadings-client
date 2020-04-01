@@ -14,10 +14,12 @@ def main():
         gpio = 4
     interval = 300
     db_path = 'db/sensordata.db'
-    api_url = 'https://0bdk4n5198.execute-api.eu-central-1.amazonaws.com/int/htreadings-single'
-    api_url_bulk = 'https://0bdk4n5198.execute-api.eu-central-1.amazonaws.com/int/htreadings-bulk'
+    base_url = 'https://eatpcfzrgg.execute-api.eu-central-1.amazonaws.com/int'
+    api_key = '1iXFG6qHJZ6C2CD1Ihvhv9s1tA2UYaXaDVZs9114'
+    api_url = base_url + '/htreadings-single'
+    api_url_bulk = base_url + '/htreadings-bulk'
     headers = {
-        'x-api-key': 'lIdPMMnhF81773ppFUa1f74sup3dmLjA9zgABZF5',
+        'x-api-key': api_key,
         'Content-Type': 'application/json'
     }
     i = 0
