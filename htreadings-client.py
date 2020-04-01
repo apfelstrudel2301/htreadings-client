@@ -81,7 +81,7 @@ def push_history(db_path, api_url, headers):
     entries_dict_list = [dict(zip(['id', 'timestamp', 'temperature', 'humidity'], values)) for values in rows]
     payload = json.dumps(entries_dict_list)
     try:
-        response = requests.request("POST", api_url_bulk, headers=headers, data=payload)
+        response = requests.request("POST", api_url, headers=headers, data=payload)
     except requests.exceptions.ConnectionError as e:
         print('Could not create connection to REST endpoint for bulk upload')
         print(e)
