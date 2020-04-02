@@ -3,7 +3,9 @@ import sqlite3
 import time
 import datetime
 import requests
+import adafruit_dht
 
+# Measurement interval in seconds
 INTERVAL = 300
 DB_PATH = 'db/sensordata.db'
 API_BASE_URL = 'https://eatpcfzrgg.execute-api.eu-central-1.amazonaws.com/int'
@@ -24,7 +26,7 @@ def main():
     push_latest_db_entries = True
     while True:
         try:
-            timestamp, temperature, humidity = record_and_save(gpio=GPIO, db_path=DB_PATH)
+            timestamp, temperature, humidity = get_sensor_reading(gpio=GPIO, db_path=DB_PATH)
             recording_error = False
         except Exception as e:
             print('Recording error')
@@ -33,7 +35,6 @@ def main():
         if not recording_error:
             if push_latest_db_entries:
                 print('Push latest database entries')
-                # bulk_upload_successful = push_history(db_path=DB_PATH, api_url_bulk=api_url_bulk, headers=headers)
                 conn = sqlite3.connect(DB_PATH)
                 cursor = conn.cursor()
                 cursor.execute(
@@ -49,7 +50,6 @@ def main():
                 else:
                     print('Bulk upload failed.')
             else:
-                # single_upload_successful = upload_entry(timestamp, temperature, humidity, api_url_single=api_url_single, headers=headers)
                 data = {
                     'timestamp': datetime.datetime.strftime(timestamp, "%Y-%m-%d %H:%M:%S.%f"),
                     'temperature': temperature,
@@ -62,11 +62,11 @@ def main():
                 else:
                     print('Single upload failed.')
                     push_latest_db_entries = True
+        print('Iteration complete')
         time.sleep(INTERVAL)
-        print('Done')
 
 
-def record_and_save(gpio, db_path):
+def get_sensor_reading(gpio, db_path):
     if not MOCK_SENSOR_READINGS:
         import Adafruit_DHT
         sensor = Adafruit_DHT.DHT22
@@ -82,7 +82,7 @@ def record_and_save(gpio, db_path):
                        (timestamp, temperature, humidity))
         conn.commit()
         conn.close()
-        print('Made entry to local db')
+        print('Made entry to local database')
     else:
         timestamp = datetime.datetime.now()
         temperature = 23.4
@@ -105,54 +105,6 @@ def upload(api_url, headers, data):
         return False
     if response.status_code == 200:
         return True
-
-
-# def push_history(db_path, api_url_bulk, headers):
-#     conn = sqlite3.connect(db_path)
-#     cursor = conn.cursor()
-#     cursor.execute('SELECT * FROM (SELECT * FROM htreadings ORDER BY timestamp desc LIMIT 201) ORDER BY timestamp asc')
-#     rows = cursor.fetchall()
-#     conn.close()
-#     entries_dict_list = [dict(zip(['id', 'timestamp', 'temperature', 'humidity'], values)) for values in rows]
-#     payload = json.dumps(entries_dict_list)
-#     try:
-#         response = requests.request("POST", api_url_bulk, headers=headers, data=payload)
-#     except requests.exceptions.ConnectionError as e:
-#         print('Could not create connection to REST endpoint for bulk upload')
-#         print(e)
-#         return False
-#     time.sleep(0.1)
-#     if response.status_code != 200:
-#         print('bulk upload error')
-#         print(response.text.encode('utf8'))
-#         return False
-#     if response.status_code == 200:
-#         print(len(entries_dict_list))
-#         print('Successfully pushed history')
-#         return True
-#
-#
-# def upload_entry(timestamp, temperature, humidity, api_url_single, headers):
-#     data = {
-#         'timestamp': datetime.datetime.strftime(timestamp, "%Y-%m-%d %H:%M:%S.%f"),
-#         'temperature': temperature,
-#         'humidity': humidity
-#     }
-#     payload = json.dumps(data)
-#     try:
-#         response = requests.request("POST", api_url_single, headers=headers, data=payload)
-#     except requests.exceptions.ConnectionError as e:
-#         print('Could not create connection to REST endpoint for single upload.')
-#         print(e)
-#         return False
-#     time.sleep(0.1)
-#     if response.status_code != 200:
-#         print('Upload error')
-#         print(response.text.encode('utf8'))
-#         return False
-#     if response.status_code == 200:
-#         print('Upload successful')
-#         return True
 
 
 if __name__ == '__main__':
