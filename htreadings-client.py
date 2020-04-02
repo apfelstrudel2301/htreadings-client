@@ -64,6 +64,7 @@ def record_and_save(sensor, gpio, db_path):
 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
+    cursor.execute('CREATE TABLE IF NOT EXISTS htreadings (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp DATETIME, temperature NUMERIC, humidity NUMERIC)')
     cursor.execute('INSERT INTO htreadings (timestamp, temperature, humidity) VALUES (?, ?, ?)',
                    (timestamp, temperature, humidity))
     conn.commit()
