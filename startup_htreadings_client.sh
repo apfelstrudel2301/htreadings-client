@@ -8,8 +8,6 @@ PYTHON_SCRIPT=htreadings-client.py
 mkdir -p "$DB_DIR"
 if [ -f "$DB_FILE_EXISTING" ]; then
     cp "$DB_FILE_EXISTING" "$DB_DIR"/"$DB_FILE"
-else
-    echo "no db file"
 fi
 
 if [ -f "$OUT_FILE" ]; then
