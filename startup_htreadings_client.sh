@@ -1,11 +1,13 @@
 #!/bin/bash
-DB_FILE=~/sensordata.db
+DB_DIR=db
+DB_FILE=sensordata.db
+DB_FILE_EXISTING=~/sensordata.db
 OUT_FILE=nohup.out
 PYTHON_SCRIPT=htreadings-client.py
 
-mkdir -p db
-if [ -f "$DB_FILE" ]; then
-    cp "$DB_FILE" db/sensordata.db
+mkdir -p "$DB_DIR"
+if [ -f "$DB_FILE_EXISTING" ]; then
+    cp "$DB_FILE_EXISTING" "$DB_DIR"/"$DB_FILE"
 else
     echo "no db file"
 fi
