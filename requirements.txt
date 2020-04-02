@@ -1,1 +1,3 @@
+board
 requests
+adafruit-circuitpython-dht
