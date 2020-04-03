@@ -14,5 +14,5 @@ if [ -f "$OUT_FILE" ]; then
     rm "$OUT_FILE"
 fi
 
-nohup python -u "$PYTHON_SCRIPT" &
+nohup python3 -u "$PYTHON_SCRIPT" &
 echo "done"
