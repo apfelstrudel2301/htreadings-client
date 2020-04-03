@@ -15,6 +15,44 @@ GPIO = 4
 MOCK_SENSOR_READINGS = False
 
 
+def get_sensor_reading(gpio, db_path):
+    if not MOCK_SENSOR_READINGS:
+        # import Adafruit_DHT
+        # sensor = Adafruit_DHT.DHT22
+        # humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
+        temperature = humidity = None
+        while not (temperature and humidity):
+            try:
+                dht_device = adafruit_dht.DHT22(board.D18)
+                print('initialized dht_device')
+                temperature = dht_device.temperature
+                print(temperature)
+                humidity = dht_device.humidity
+                print(humidity)
+                timestamp = datetime.datetime.now()
+                print(timestamp)
+                print('Temperature: {0:0.1f}*C, Humidity: {1:0.1f}%'.format(temperature, humidity))
+                conn = sqlite3.connect(db_path)
+                cursor = conn.cursor()
+                cursor.execute('CREATE TABLE IF NOT EXISTS htreadings (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp '
+                               'DATETIME, temperature NUMERIC, humidity NUMERIC)')
+                cursor.execute('INSERT INTO htreadings (timestamp, temperature, humidity) VALUES (?, ?, ?)',
+                               (timestamp, temperature, humidity))
+                conn.commit()
+                conn.close()
+                print('Made entry to local database')
+            except RuntimeError as error:
+                # Errors happen fairly often, DHT's are hard to read, just keep going
+                print('Error reading the sensor')
+                print(error.args[0])
+            time.sleep(5)
+    else:
+        timestamp = datetime.datetime.now()
+        temperature = 23.4
+        humidity = 56.7
+    return timestamp, temperature, humidity
+
+
 def main():
     api_url_single = API_BASE_URL + '/htreadings-single'
     api_url_bulk = API_BASE_URL + '/htreadings-bulk'
@@ -65,41 +103,6 @@ def main():
                     push_latest_db_entries = True
         print('Iteration complete')
         time.sleep(INTERVAL)
-
-
-def get_sensor_reading(gpio, db_path):
-    if not MOCK_SENSOR_READINGS:
-        # import Adafruit_DHT
-        # sensor = Adafruit_DHT.DHT22
-        # humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
-        temperature = humidity = None
-        while not (temperature and humidity):
-            try:
-                dht_device = adafruit_dht.DHT22(board.D18)
-                temperature = dht_device.temperature
-                humidity = dht_device.humidity
-                timestamp = datetime.datetime.now()
-                print(timestamp)
-                print('Temperature: {0:0.1f}*C, Humidity: {1:0.1f}%'.format(temperature, humidity))
-                conn = sqlite3.connect(db_path)
-                cursor = conn.cursor()
-                cursor.execute('CREATE TABLE IF NOT EXISTS htreadings (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp '
-                               'DATETIME, temperature NUMERIC, humidity NUMERIC)')
-                cursor.execute('INSERT INTO htreadings (timestamp, temperature, humidity) VALUES (?, ?, ?)',
-                               (timestamp, temperature, humidity))
-                conn.commit()
-                conn.close()
-                print('Made entry to local database')
-            except RuntimeError as error:
-                # Errors happen fairly often, DHT's are hard to read, just keep going
-                print('Error reading the sensor')
-                print(error.args[0])
-            time.sleep(5)
-    else:
-        timestamp = datetime.datetime.now()
-        temperature = 23.4
-        humidity = 56.7
-    return timestamp, temperature, humidity
 
 
 def upload(api_url, headers, data):
