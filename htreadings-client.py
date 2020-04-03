@@ -3,16 +3,19 @@ import sqlite3
 import time
 import datetime
 import requests
-import adafruit_dht
-import board
+
 
 # Measurement interval in seconds
 INTERVAL = 300
 DB_PATH = 'db/sensordata.db'
 API_BASE_URL = 'https://eatpcfzrgg.execute-api.eu-central-1.amazonaws.com/int'
 API_KEY = '1iXFG6qHJZ6C2CD1Ihvhv9s1tA2UYaXaDVZs9114'
-# GPIO = 4
 MOCK_SENSOR_READINGS = False
+if not MOCK_SENSOR_READINGS:
+    import adafruit_dht
+    import board
+    # Configure DHT device: choose between DHT22 and DHT11 and data PIN (pin 4 = board.D4)
+    DHT_DEVICE = adafruit_dht.DHT22(board.D4)
 
 
 def main():
@@ -25,9 +28,8 @@ def main():
     iteration_count = 0
     # Used in case of errors to recover the delta between the local and remote data
     push_latest_db_entries = True
-    dht_device = adafruit_dht.DHT22(board.D4)
     while True:
-        timestamp, temperature, humidity = get_sensor_reading(dht_device=dht_device, db_path=DB_PATH)
+        timestamp, temperature, humidity = get_sensor_reading(dht_device=DHT_DEVICE, db_path=DB_PATH)
         if push_latest_db_entries:
             print('Push latest database entries')
             conn = sqlite3.connect(DB_PATH)
@@ -67,9 +69,7 @@ def get_sensor_reading(dht_device, db_path):
         while not (temperature and humidity and timestamp):
             try:
                 temperature = dht_device.temperature
-                print(temperature)
                 humidity = dht_device.humidity
-                print(humidity)
                 timestamp = datetime.datetime.now()
                 print(timestamp)
                 print('Temperature: {0:0.1f}*C, Humidity: {1:0.1f}%'.format(temperature, humidity))
