@@ -1,11 +1,11 @@
 # htreadings-client
-The client software for recording DHT22 sensor readings with a Raspberry Pi and sending them to an API (e.g. for displaying the data in a dashboard).
+The client software for recording DHT22 sensor readings with a Raspberry Pi and sending them to an API (e.g. for displaying the data in a dashboard). This client is best used together with [htreadings-dashboard](https://github.com/apfelstrudel2301/htreadings-aws).
 
 ## Getting started
 
 ### Prerequisites
 - DHT22 sensor connected to Raspberry Pi
-- Raspbian Buster operating system (if you have to upgrade from stretch check out this [upgrade tutorial](https://pimylifeup.com/upgrade-raspbian-stretch-to-raspbian-buster))
+- Raspbian Buster operating system. If you have to upgrade from stretch check out this [upgrade tutorial](https://pimylifeup.com/upgrade-raspbian-stretch-to-raspbian-buster).
 
 ### Install dependencies
 
@@ -36,4 +36,4 @@ chmod +x startup_htreadings_client.sh
 ```
 
 ## Misc
-Formerly the [Adafruit_DHT](https://github.com/adafruit/Adafruit_Python_DHT) package was used for recoriding the sensor values.
+Formerly the [Adafruit_DHT](https://github.com/adafruit/Adafruit_Python_DHT) package was used for reading the sensor values.
