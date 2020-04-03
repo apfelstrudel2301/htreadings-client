@@ -3,19 +3,22 @@ import sqlite3
 import time
 import datetime
 import requests
+import config
 
 
-# Measurement interval in seconds
-INTERVAL = 300
-DB_PATH = 'db/sensordata.db'
-API_BASE_URL = 'https://eatpcfzrgg.execute-api.eu-central-1.amazonaws.com/int'
-API_KEY = '1iXFG6qHJZ6C2CD1Ihvhv9s1tA2UYaXaDVZs9114'
+# String containing the API URL
+API_BASE_URL = config.API_BASE_URL
+# String containing the API key
+API_KEY = config.API_KEY
 MOCK_SENSOR_READINGS = False
 if not MOCK_SENSOR_READINGS:
     import adafruit_dht
     import board
     # Configure DHT device: choose between DHT22 and DHT11 and data PIN (pin 4 = board.D4)
     DHT_DEVICE = adafruit_dht.DHT22(board.D4)
+# Measurement interval in seconds
+INTERVAL = 300
+DB_PATH = 'db/sensordata.db'
 
 
 def main():
