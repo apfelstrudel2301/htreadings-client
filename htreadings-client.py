@@ -23,7 +23,7 @@ def get_sensor_reading(gpio, db_path):
         temperature = humidity = None
         while not (temperature and humidity):
             try:
-                dht_device = adafruit_dht.DHT22(board.D18)
+                dht_device = adafruit_dht.DHT22(board.D4)
                 print('initialized dht_device')
                 temperature = dht_device.temperature
                 print(temperature)
@@ -45,6 +45,7 @@ def get_sensor_reading(gpio, db_path):
                 # Errors happen fairly often, DHT's are hard to read, just keep going
                 print('Error reading the sensor')
                 print(error.args[0])
+                print('-------------------------------------------------')
             time.sleep(5)
     else:
         timestamp = datetime.datetime.now()
