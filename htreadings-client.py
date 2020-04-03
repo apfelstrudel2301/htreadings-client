@@ -69,7 +69,7 @@ def main():
 
 def get_sensor_reading(gpio, db_path):
     if not MOCK_SENSOR_READINGS:
-        import Adafruit_DHT
+        # import Adafruit_DHT
         # sensor = Adafruit_DHT.DHT22
         # humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
         temperature = humidity = None
@@ -94,7 +94,7 @@ def get_sensor_reading(gpio, db_path):
                 # Errors happen fairly often, DHT's are hard to read, just keep going
                 print('Error reading the sensor')
                 print(error.args[0])
-            time.sleep(1)
+            time.sleep(5)
     else:
         timestamp = datetime.datetime.now()
         temperature = 23.4
