@@ -1,5 +1,5 @@
 # htreadings-client
-The client software for recording DHT22 sensor readings with a Raspberry Pi and sending them to an API (e.g. for displaying the data in a dashboard). This client is best used together with [htreadings-dashboard](https://github.com/apfelstrudel2301/htreadings-aws).
+The client software for recording DHT22 sensor readings with a Raspberry Pi and sending them to an API (e.g. for displaying the data in a dashboard). This client is best used together with [htreadings-dashboard](https://github.com/apfelstrudel2301/htreadings-dashboard).
 
 ## Getting started
 
