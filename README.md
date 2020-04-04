@@ -23,7 +23,7 @@ sudo apt-get install libgpiod2
 The following attributes in [htreadings-client.py](htreadings-client.py) have to be configured individually:
 - API_BASE_URL: String containing the API URL for 
 - API_KEY: API key of the API
-- DHT_DEVICE: You might need to change this configuration if you don't use a DHT22 sensor and if it is not connected to pin 4 on the raspberry pi. Check out [CircuitPython Libraries](https://learn.adafruit.com/dht-humidity-sensing-on-raspberry-pi-with-gdocs-logging/python-setup) for possible configurations.
+- DHT_DEVICE: You might need to change this configuration if you don't use a DHT22 sensor and if it is not connected to pin 4 on the raspberry pi. Check out the documentation of the [CircuitPython Library](https://learn.adafruit.com/dht-humidity-sensing-on-raspberry-pi-with-gdocs-logging/python-setup) for possible configurations.
 
 ### Start script
 Start recording sensor readings and sending them to an API by executing the startup script:
