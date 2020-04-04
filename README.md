@@ -14,7 +14,7 @@ Install the Python dependencies
 pip3 install -r requirements.txt
 ```
 
-Installl the libgiod2 library needed by the [CircuitPython Libraries](https://learn.adafruit.com/dht-humidity-sensing-on-raspberry-pi-with-gdocs-logging/python-setup).
+Installl the libgiod2 library required by the [CircuitPython Library](https://learn.adafruit.com/dht-humidity-sensing-on-raspberry-pi-with-gdocs-logging/python-setup).
 ```bash
 sudo apt-get install libgpiod2
 ```
